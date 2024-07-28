@@ -19,7 +19,7 @@ jobs:
     - name: Set up Qt
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.7.*' # Rollback to last release because 6.8 isn't on the repo yet
+        version: '6.8.0' # Rollback to last release because 6.8 isn't on the repo yet
         host: 'linux'
         target: 'desktop'
         arch: 'gcc_64'
@@ -53,7 +53,7 @@ jobs:
     - name: Set up Qt
       uses: jurplel/install-qt-action@v4
       with:
-        version: '6.7.*'
+        version: '6.8.0'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2022_64'
