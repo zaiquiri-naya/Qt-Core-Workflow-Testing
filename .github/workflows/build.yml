@@ -24,6 +24,7 @@ jobs:
         target: 'desktop'
         arch: 'gcc_64'
         dir: '${{ github.workspace }}'
+        setup-python: false
 
     - name: Set up build environment
       run: |
@@ -58,6 +59,7 @@ jobs:
         target: 'desktop'
         arch: 'win64_msvc2022_64'
         dir: '${{ github.workspace }}'
+        setup-python: false
 
     - name: Set up build environment
       run: |
