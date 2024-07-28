@@ -76,7 +76,7 @@ jobs:
 
     - name: Deploy Dependencies
       run: |
-        windeploy build\Release\HelloLogger.exe
+        windeployqt build\Release\HelloLogger.exe
 
     - name: Zip Deployed Files
       run: powershell Compress-Archive -Path build\Release\* -DestinationPath build\Release\HelloLogger.zip
