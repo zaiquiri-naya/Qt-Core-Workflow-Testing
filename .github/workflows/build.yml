@@ -36,6 +36,13 @@ jobs:
 
     - name: Build project
       run: cmake --build build --config Release
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: qt-build-linux
+        path: build/
+
   build-windows:
     runs-on: windows-latest
 
@@ -71,5 +78,56 @@ jobs:
       with:
         name: qt-build-windows
         path: build/
-  
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    # if: github.event_name == 'push'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Download Linux build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: qt-build-linux
+        path: build/linux
+
+    - name: Download Windows build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: qt-build-windows
+        path: build/windows
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Linux Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build/linux/your_binary_or_artifact_file
+        asset_name: your_binary_or_artifact_file_linux
+        asset_content_type: application/octet-stream
+
+    - name: Upload Windows Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build/windows/your_binary_or_artifact_file
+        asset_name: your_binary_or_artifact_file_windows
+        asset_content_type: application/octet-stream
   
