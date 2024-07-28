@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,3 +36,40 @@ jobs:
 
     - name: Build project
       run: cmake --build build --config Release
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        dir: 'C:\\Qt'
+
+    - name: Set up build environment
+      run: |
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        setx PATH "C:\\Qt\\5.15.2\\msvc2019_64\\bin;%PATH%"
+
+    - name: Configure project
+      run: cmake -B build -S .
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Run tests
+      run: ctest --test-dir build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: qt-build-windows
+        path: build/
+  
+  
