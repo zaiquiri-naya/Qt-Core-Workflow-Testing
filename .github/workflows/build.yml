@@ -19,17 +19,17 @@ jobs:
     - name: Set up Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.15.2'
+        version: '6.8.0'
         host: 'linux'
         target: 'desktop'
         arch: 'gcc_64'
-        dir: '$HOME/Qt'
+        dir: '${{ github.workspace }}/'
 
     - name: Set up build environment
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake
-        export PATH=$HOME/Qt/5.15.2/gcc_64/bin:$PATH
+        export PATH=$QT_ROOT_DIR/bin:$PATH
 
     - name: Configure project
       run: cmake -B build -S .
@@ -53,16 +53,19 @@ jobs:
     - name: Set up Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.15.2'
+        version: '6.8.0'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-        dir: 'C:\\Qt'
+        dir: '${{ github.workspace }}\\'
 
     - name: Set up build environment
       run: |
         choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-        setx PATH "C:\\Qt\\5.15.2\\msvc2019_64\\bin;%PATH%"
+        setx PATH "$GITHUB_WORKSPACE\\Qt\\{version}\\{arch}\\bin;%PATH%"
+
+    - name: Check Path
+      run: echo $PATH
 
     - name: Configure project
       run: cmake -B build -S .
@@ -72,7 +75,7 @@ jobs:
 
     - name: Deploy Dependencies
       run: |
-        C:\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe build\Release\HelloLogger.exe
+        windeploy.exe build\Release\HelloLogger.exe
 
     - name: Zip Deployed Files
       run: powershell Compress-Archive -Path build\Release\* -DestinationPath build\Release\HelloLogger.zip
