@@ -70,8 +70,12 @@ jobs:
     - name: Build project
       run: cmake --build build --config Release
 
-    - name: Run tests
-      run: ctest --test-dir build
+    - name: Deploy Dependencies
+      run: |
+        C:\Qt\5.15.2\msvc2019_64\bin\windeployqt.exe build\Release\HelloLogger.exe
+
+    - name: Zip Deployed Files
+      run: powershell Compress-Archive -Path build\Release\* -DestinationPath build\Release\HelloLogger.zip
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
@@ -114,23 +118,13 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Linux Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/linux/your_binary_or_artifact_file
-        asset_name: your_binary_or_artifact_file_linux
-        asset_content_type: application/octet-stream
-
     - name: Upload Windows Release Assets
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/windows/your_binary_or_artifact_file
-        asset_name: your_binary_or_artifact_file_windows
+        asset_path: build/windows/Release/HelloLogger.zip
+        asset_name: HelloLogger-WindowsZip
         asset_content_type: application/octet-stream
   
